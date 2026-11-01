@@ -1,0 +1,54 @@
+name: Build VC ASI probe
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-x86:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC x86 environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: Build 32-bit ASI probe
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          cl.exe /nologo /LD /O2 /MT /DWIN32 /D_WINDOWS src\probe.cpp /link /MACHINE:X86 /OUT:build\vc_asi_probe.asi
+          if ($LASTEXITCODE -ne 0) { throw "MSVC compilation failed" }
+
+      - name: Verify PE architecture
+        shell: pwsh
+        run: |
+          $bytes = [System.IO.File]::ReadAllBytes("build\vc_asi_probe.asi")
+          if ($bytes.Length -lt 64 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) {
+            throw "Output is not a valid PE/DOS image"
+          }
+          $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
+          if ($peOffset -lt 0 -or $peOffset + 6 -gt $bytes.Length) {
+            throw "Invalid PE header offset"
+          }
+          if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or
+              $bytes[$peOffset + 2] -ne 0 -or $bytes[$peOffset + 3] -ne 0) {
+            throw "PE signature not found"
+          }
+          $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+          if ($machine -ne 0x014c) {
+            throw ("Expected x86 machine 0x014c, got 0x{0:X4}" -f $machine)
+          }
+          Write-Host "Verified 32-bit x86 PE: build\vc_asi_probe.asi"
+
+      - name: Upload ASI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vc-asi-probe
+          path: build/vc_asi_probe.asi
+          if-no-files-found: error
