@@ -1,4 +1,4 @@
-name: Build VC ASI probe
+name: Build VC ASI
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
         with:
           arch: x86
 
-      - name: Build 32-bit ASI probe
+      - name: Build 32-bit ASI
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path build | Out-Null
@@ -49,6 +49,6 @@ jobs:
       - name: Upload ASI artifact
         uses: actions/upload-artifact@v4
         with:
-          name: vc-asi-probe
-          path: build/vc_asi_probe.asi
+          name: vc-pause-map-expansion-probe
+          path: build/vc_pause_map_expansion_probe.asi
           if-no-files-found: error
