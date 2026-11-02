@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdio.h>
+#include <string.h>
 
 static const DWORD kMenuManagerAddress = 0x00869630;
 static const int kMapPage = 6;
