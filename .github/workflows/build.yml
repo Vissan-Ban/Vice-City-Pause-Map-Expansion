@@ -18,11 +18,11 @@ jobs:
         with:
           arch: x86
 
-      - name: Build 32-bit ASI
+      - name: Build 32-bit runtime probe ASI
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path build | Out-Null
-          cl.exe /nologo /LD /O2 /MT /DWIN32 /D_WINDOWS src\probe.cpp user32.lib /link /MACHINE:X86 /OUT:build\vc_pause_map_expansion_probe.asi
+          cl.exe /nologo /LD /O2 /MT /DWIN32 /D_WINDOWS src\runtime_probe.cpp user32.lib /link /MACHINE:X86 /OUT:build\vc_pause_map_expansion_probe.asi
           if ($LASTEXITCODE -ne 0) { throw "MSVC compilation failed" }
 
       - name: Verify PE architecture
