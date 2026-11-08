@@ -2,6 +2,14 @@
 
 All notable project and repository changes are recorded here.
 
+## 2026-11-08 — Runtime probe verified
+
+- Recorded the owner's successful in-game tests of the read-only runtime probe across two game runs.
+- Confirmed runtime values for the VC 1.0 main module, menu manager, MAP page, mouse coordinates, and show-mouse flag.
+- Documented observed page transitions and explicitly left transient page value `32` unexplained.
+- Updated project status: the next milestone is safe draw-hook and native-font research, followed by a fixed MAP-only text overlay.
+- No production drawing hook, map replacement, or asset modification was introduced.
+
 ## 2026-11-01 — Project formalization
 
 - Renamed the repository to **Vice-City-Pause-Map-Expansion**.
