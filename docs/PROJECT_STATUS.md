@@ -2,30 +2,29 @@
 
 **Project:** Vice City Pause Map Expansion  
 **Target:** GTA Vice City PC 1.0, 32-bit  
-**Status:** Runtime probe verified; native font API mapped; draw-hook validation
+**Status:** Runtime probe verified; native font API mapped; vanilla MAP draw path traced; hook validation in progress
 
 ## Verified
-- [x] Repository formalized and renamed.
 - [x] Windows x86 MSVC build workflow succeeds; output is PE x86 (`0x014c`).
 - [x] User confirmed ASI load test in-game.
 - [x] Read-only runtime probe tested in two game runs.
-- [x] Main module base `0x00400000` and menu manager base `0x00869630` confirmed.
-- [x] Page offset `0xF8`, MAP page value `6`, mouse offsets `0x12C/0x130`, and show-mouse offset `0x140` read successfully at runtime.
-- [x] Mouse coordinates changed during MAP use; show-mouse flag read `1`; no read errors reported.
-- [x] VC-specific CFont function addresses, cdecl signatures, and wide-character print path cross-checked against Plugin-SDK source.
-- [x] Transient page value `32` identified by the VC SDK enum as `MENUPAGE_PAUSE_MENU`.
+- [x] Main module base `0x00400000`, menu manager base `0x00869630`, MAP page `6`, mouse fields, and show-mouse flag confirmed at runtime.
+- [x] VC-specific CFont addresses, cdecl signatures, and wide-character print path cross-checked against Plugin-SDK.
+- [x] Page value `32` identified as `MENUPAGE_PAUSE_MENU`.
+- [x] Disassembly confirms the larger menu routine dispatches to vanilla MAP renderer `0x0049A5B7` only when page field `[ESI+0xF8]` equals `6`, then continues drawing other UI.
+- [x] Plugin-SDK identifies the routine's final call at `0x00578710` as `CSprite2d::Draw(CRect const&, CRGBA const&)`.
 
 ## Current implementation
-`src/runtime_probe.cpp` remains a read-only diagnostic probe. It does not install rendering hooks or draw text.
+`src/runtime_probe.cpp` remains read-only. No drawing hook or CFont call has been added.
 
-## Next milestone
-Identify and validate a safe in-frame callback after vanilla MAP content is drawn. Then build a fixed MAP-only text overlay using the VC native CFont API. Compare its appearance with the familiar CLEO `045A` style.
+## Current next milestone
+Trace the caller and outer frontend render order around the routine ending at `0x004A37A1`. Determine whether a safe after-menu draw event exists. Then build a fixed MAP-only text test using the native VC CFont API.
 
-The probe worker thread is not a rendering callback. Do not draw from it. CFont setters alter shared engine state; do not add drawing until state handling and callback timing are understood.
+Do not hook or replace `0x0049A5B7`; preserve the vanilla map renderer. Do not draw from the probe worker thread.
 
 ## Not implemented / unverified
-- Fixed text overlay and safe draw callback.
-- Runtime validation of CFont calls in our ASI.
+- Safe post-menu callback.
+- Fixed text overlay and runtime CFont validation.
 - Exact map rectangle and mouse-to-map conversion.
 - Hover location names and right-click waypoint.
 
