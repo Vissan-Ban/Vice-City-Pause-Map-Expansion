@@ -18,6 +18,13 @@ All notable project and repository changes are recorded here.
 - Identified the routine return at `0x004A37A1` as the next caller/outer-render trace boundary, not yet an approved hook.
 - No hook, font call, map replacement, or asset modification was introduced.
 
+## 2026-11-09 — Frontend menu draw callback candidate identified
+
+- Cross-checked Plugin-SDK's VC 1.0 `menuDrawingEvent` call sites (`0x4A5D33`, `0x4A612E`) against the exact supplied executable; both call `0x4A37A4` with the menu manager in ECX.
+- Confirmed the during-session callback site at `0x4A612E` is followed by `CFont::DrawFonts` at `0x4A613D`, whose wrapper calls `RenderFontBuffer`.
+- Identified a promising after-menu/before-font-flush route for queuing a fixed text label, pending checks of intervening calls and runtime callback behavior.
+- No rendering hook or CFont call was installed.
+
 ## 2026-11-08 — Runtime probe verified
 - Recorded the owner's successful read-only probe tests across two game runs.
 - Confirmed runtime menu-manager, MAP-page, mouse-coordinate, and show-mouse values.
