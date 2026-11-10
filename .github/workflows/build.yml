@@ -25,6 +25,31 @@ jobs:
           cl.exe /nologo /LD /O2 /MT /DWIN32 /D_WINDOWS src\runtime_probe.cpp user32.lib /link /MACHINE:X86 /OUT:build\vc_pause_map_expansion_probe.asi
           if ($LASTEXITCODE -ne 0) { throw "MSVC compilation failed" }
 
+
+      - name: Build 32-bit MAP fixed-text test ASI
+        shell: pwsh
+        run: |
+          cl.exe /nologo /LD /O2 /MT /DWIN32 /D_WINDOWS src\map_text_test.cpp user32.lib kernel32.lib /link /MACHINE:X86 /OUT:build\vc_pause_map_fixed_text_test.asi
+          if ($LASTEXITCODE -ne 0) { throw "MAP fixed-text test compilation failed" }
+
+      - name: Verify MAP text test PE architecture
+        shell: pwsh
+        run: |
+          $bytes = [System.IO.File]::ReadAllBytes("build\vc_pause_map_fixed_text_test.asi")
+          if ($bytes.Length -lt 64 -or $bytes[0] -ne 0x4D -or $bytes[1] -ne 0x5A) { throw "Invalid MAP text test PE" }
+          $peOffset = [BitConverter]::ToInt32($bytes, 0x3C)
+          if ($peOffset -lt 0 -or $peOffset + 6 -gt $bytes.Length) { throw "Invalid PE header offset" }
+          if ($bytes[$peOffset] -ne 0x50 -or $bytes[$peOffset + 1] -ne 0x45 -or $bytes[$peOffset + 2] -ne 0 -or $bytes[$peOffset + 3] -ne 0) { throw "PE signature not found" }
+          $machine = [BitConverter]::ToUInt16($bytes, $peOffset + 4)
+          if ($machine -ne 0x014c) { throw ("Expected x86 machine 0x014c, got 0x{0:X4}" -f $machine) }
+
+      - name: Upload MAP fixed-text test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vc-pause-map-fixed-text-test
+          path: build/vc_pause_map_fixed_text_test.asi
+          if-no-files-found: error
+
       - name: Verify PE architecture
         shell: pwsh
         run: |
