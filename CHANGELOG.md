@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-11-11 — Lower-right fixed-text placement test
+- Moved the already user-verified MAP fixed label from the upper-left to a provisional lower-right position (`420, 360`) in the 640x448 frontend coordinate space.
+- Kept the existing hook site, MAP-page guard, original DrawFonts call, and original map renderer untouched.
+- This is a positioning experiment only; bottom-row clearance and edge margins still require owner in-game verification.
+
+
 All notable project and repository changes are recorded here.
 
 ## 2026-11-09 — Native font API mapped
