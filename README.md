@@ -23,11 +23,15 @@ The goal is to expand the original pause-menu **MAP** page with mouse-driven loc
 
 ## Current status
 
-The initial 32-bit ASI load probe has been built successfully with GitHub Actions and manually confirmed to load in-game. This proves the loader/build path only; it does **not** yet prove any map-page hook or map interaction.
+- [x] Runtime probe confirmed the VC 1.0 menu manager, MAP page, and mouse fields in-game.
+- [x] Separate fixed-text ASI built by GitHub Actions and **visually confirmed by the project owner** on the original MAP page.
+- [ ] Lower-right text placement is the current positioning experiment; bottom-row clearance still awaits in-game confirmation.
+- [ ] Mouse-to-map/world-coordinate conversion and hover location labels are not yet implemented.
+- [ ] Waypoint placement remains deferred.
 
-The current `src/probe.cpp` is intentionally a harmless load-test plugin. It does not access game addresses, patch instructions, hook functions, or alter game data.
+The fixed-text hook queues a CFont string before the game's original `CFont::DrawFonts` call. It does not replace the original MAP renderer at `0x0049A5B7`. The current build is an experimental test artifact, not a finished release.
 
-See [CHANGELOG.md](CHANGELOG.md) for the project record and [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) for the current verification checklist.
+See [CHANGELOG.md](CHANGELOG.md) for the project record and [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) for the verification checklist.
 
 ## Build
 
@@ -42,6 +46,6 @@ Pushes to `main` and manual workflow dispatch run the Windows x86 MSVC build:
 - Game: Grand Theft Auto: Vice City
 - Executable: PC 1.0
 - Architecture: 32-bit x86
-- Current stage: ASI load probe only
+- Current stage: experimental fixed-text overlay; placement iteration in progress
 
-No map functionality is claimed until it has been implemented and tested in-game.
+Only the fixed-text overlay has been visually verified. Mouse coordinate conversion, hover labels, and waypoint behavior are not yet claimed.
