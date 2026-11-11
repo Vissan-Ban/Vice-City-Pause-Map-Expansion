@@ -35,7 +35,7 @@ static void QueueFixedText()
         reinterpret_cast<FontShortFn>(0x0054FF20)(1);
         reinterpret_cast<FontShortFn>(0x0054FFE0)(2);
         reinterpret_cast<FontScaleFn>(0x00550230)(0.64f, 1.28f);
-        reinterpret_cast<FontPrintFn>(0x00551040)(32.0f, 48.0f, L"MAP TEXT TEST");
+        reinterpret_cast<FontPrintFn>(0x00551040)(420.0f, 360.0f, L"MAP TEXT TEST");
     } __except (EXCEPTION_EXECUTE_HANDLER) {
         OutputDebugStringA("VC MAP text test: exception while queuing CFont text.\n");
     }
